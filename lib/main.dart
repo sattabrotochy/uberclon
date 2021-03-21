@@ -6,6 +6,8 @@ import 'package:uber_clone/AllScreen/loginscreen.dart';
 import 'package:uber_clone/AllScreen/mainscreen.dart';
 import 'package:uber_clone/contains.dart';
 
+import 'contains.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: SIGN_IN,
+      initialRoute: Home_page,
       routes: <String, WidgetBuilder>{
 
         SIGN_IN: (BuildContext context) =>  LoginScreen(),

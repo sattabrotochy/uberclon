@@ -1,7 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_clone/AllWidget/progessdilog.dart';
 import 'package:uber_clone/contains.dart';
 import 'package:uber_clone/main.dart';
+
+import '../contains.dart';
+import '../contains.dart';
+import '../contains.dart';
+import '../contains.dart';
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -190,7 +196,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       children: [
                         isLoading == true
                             ? CircularProgressIndicator(
-                                color: Colors.yellow[700],
+                          backgroundColor: Colors.yellow[700],
+
                               )
                             : Text(''),
                       ],
@@ -212,11 +219,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future CreateAccountUser(BuildContext context) async {
     try {
+
+
+      showDialog(context: context,barrierDismissible: false,builder: (BuildContext context){
+        return ProgressDialog(message: "please wait......");
+      });
+
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailText.text.toString(),
         password: passwordText.text.toString(),
-      );
+      ).catchError((onError){
+            Navigator.of(context).pop();
+          DisplayToastMessage("Error", context);
+          });
 
       if (userCredential != null) {
         Map userDataMap = {
@@ -228,19 +244,25 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         };
         usersRef.child(userCredential.user.uid).set(userDataMap);
         DisplayToastMessage('Registration successful', context);
-        setState(() {
-          isLoading = false;
-        });
         Navigator.of(context).pop();
+        nameText.clear();
+        emailText.clear();
+        numberText.clear();
+        passwordText.clear();
+        Navigator.of(context).pushNamed(SIGN_IN);
       }
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         DisplayToastMessage('The password provided is too weak.', context);
+        Navigator.of(context).pop();
       } else if (e.code == 'email-already-in-use') {
         DisplayToastMessage(
             'The account already exists for that email.', context);
+        Navigator.of(context).pop();
       }
     } catch (e) {
+      Navigator.of(context).pop();
       print(e);
     }
   }

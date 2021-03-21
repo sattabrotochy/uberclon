@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:uber_clone/AllWidget/progessdilog.dart';
 import 'package:uber_clone/contains.dart';
 import 'package:uber_clone/main.dart';
+
+import '../contains.dart';
+import '../contains.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -139,11 +143,19 @@ class _LoginScreenState extends State<LoginScreen> {
   void gotoHomePage(BuildContext context) async {
 
     try{
+      showDialog(context: context,barrierDismissible: false,builder: (BuildContext context){
+        return ProgressDialog(message: "Authenticating,please wait......");
+      });
 
       UserCredential userCredential= await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailText.text.toString(),
         password: passwordText.text.toString(),
-      );
+
+      ).catchError((onError){
+        Navigator.of(context).pop();
+        DisplayToastMessage('Error'+onError.toString(), context);
+      });
+
       if(userCredential !=null)
         {
           usersRef.child(userCredential.user.uid).once().then((DataSnapshot  snapshot)
@@ -153,17 +165,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 Navigator.of(context).pushNamed(Home_page);
               }
             else{
+              Navigator.of(context).pop();
               auth.signOut();
               DisplayToastMessage("Please create a account", context);
             }
 
           });
 
-
+          Navigator.of(context).pop();
         }
+      else{
+        Navigator.of(context).pop();
+        DisplayToastMessage('Error Occured ,can not be Signed-in', context);
+      }
+
 
     }catch(e)
     {
+      Navigator.of(context).pop();
       DisplayToastMessage(e,context);
     }
 

@@ -32,6 +32,7 @@ dependencies:
   firebase_auth:
   firebase_database:
   toast:
+  google_maps_flutter:
 
 dev_dependencies:
   flutter_test:
